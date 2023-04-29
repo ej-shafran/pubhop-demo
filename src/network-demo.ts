@@ -8,20 +8,25 @@ type EventHandlers = {
 
 const network = new Network<EventHandlers>();
 
-const unsub = network.subscribe("click", (x, y) => {
-  console.log(`recieved click at coordinates (${x},${y})`);
+const unfollow = network.follow((event, xOrTime?, y?) => {
+  console.log(`${event} event triggered`);
+
+  switch (event) {
+    case "load":
+      console.log("no data received");
+      break;
+    case "exit":
+      console.log("data: ", xOrTime.toLocaleTimeString());
+      unfollow();
+      break;
+    case "click":
+      console.log("data: ", `(${xOrTime},${y})`);
+      break;
+  }
 });
 
-const unfollow = network.follow((event, ...data) => {
-  console.log(`${event} event triggered`);
-  if (event !== "load") {
-    console.log(`with ${data.join(", ")}`);
-  }
-
-  if (event === "exit") {
-    data;
-    unfollow();
-  }
+network.subscribe("click", (x, y) => {
+  console.log(`received click at coordinates (${x},${y})`);
 });
 
 network.publish("load");
